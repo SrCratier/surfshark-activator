@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activar Surfshark</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
+        h2 { color: #00d18a; margin-bottom: 1.5rem; }
+        input { width: 100%; padding: 12px; margin-bottom: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1.2rem; text-align: center; letter-spacing: 2px; text-transform: uppercase; box-sizing: border-box;}
+        button { width: 100%; padding: 12px; background-color: #00d18a; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background-color: #00a86b; }
+        #status { margin-top: 1rem; font-weight: bold; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Activar Dispositivo</h2>
+        <p>Ingresa el código que aparece en tu TV o App</p>
+        <input type="text" id="code" placeholder="ABC-123" maxlength="10">
+        <button onclick="activar()" id="btn">Activar Ahora</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        // ¡OJO! AQUI PONDREMOS LA URL DE RENDER CUANDO LA TENGAMOS
+        const API_URL = "URL_DE_TU_BACKEND_RENDER"; 
+
+        async function activar() {
+            const codeInput = document.getElementById('code');
+            const status = document.getElementById('status');
+            const btn = document.getElementById('btn');
+            const code = codeInput.value.trim().toUpperCase();
+
+            if (!code) return;
+
+            btn.disabled = true;
+            btn.innerText = "Procesando...";
+            status.innerText = "";
+
+            try {
+                const response = await fetch(API_URL + "/activar", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    status.className = "success";
+                    status.innerText = "✅ " + data.message;
+                    codeInput.value = "";
+                } else {
+                    status.className = "error";
+                    status.innerText = "❌ " + data.message;
+                }
+            } catch (error) {
+                status.className = "error";
+                status.innerText = "Error de conexión con el servidor.";
+            }
+            btn.disabled = false;
+            btn.innerText = "Activar Ahora";
+        }
+    </script>
+</body>
+</html>
