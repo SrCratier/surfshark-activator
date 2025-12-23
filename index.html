@@ -3,43 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activar Surfshark</title>
+    <title>Activar SurfShark VPN</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
-        h2 { color: #00d18a; margin-bottom: 1.5rem; }
-        input { width: 100%; padding: 12px; margin-bottom: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1.2rem; text-align: center; letter-spacing: 2px; text-transform: uppercase; box-sizing: border-box;}
-        button { width: 100%; padding: 12px; background-color: #00d18a; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background-color: #00a86b; }
-        #status { margin-top: 1rem; font-weight: bold; }
-        .error { color: red; }
-        .success { color: green; }
+        :root {
+            --primary-color: #00d18a;
+            --hover-color: #00a86b;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background-color: var(--bg-color); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card { 
+            background: white; 
+            padding: 2.5rem; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+            text-align: center; 
+            max-width: 420px; 
+            width: 100%; 
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        h2 { 
+            color: var(--text-color); 
+            margin-bottom: 0.5rem; 
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            margin-bottom: 1.5rem; 
+            border: 2px solid #e1e4e8; 
+            border-radius: 10px; 
+            font-size: 1.5rem; 
+            text-align: center; 
+            letter-spacing: 4px; 
+            text-transform: uppercase; 
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+        }
+
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            background-color: var(--primary-color); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 4px 6px rgba(0, 209, 138, 0.2);
+        }
+
+        button:hover { 
+            background-color: var(--hover-color); 
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px rgba(0, 209, 138, 0.3);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #status { 
+            margin-top: 1.5rem; 
+            font-weight: 600; 
+            min-height: 20px;
+        }
+
+        .error { color: #e74c3c; }
+        
+        .success-box { 
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #e8f8f3;
+            border: 1px solid #c3e6db;
+            border-radius: 8px;
+            color: #0f5132;
+            font-size: 0.9rem;
+            text-align: left;
+            display: none; /* Oculto por defecto */
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .success-title {
+            font-weight: 800;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #00a86b;
+            font-size: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>Activar Dispositivo</h2>
-        <p>Ingresa el código que aparece en tu TV o App</p>
-        <input type="text" id="code" placeholder="ABC-123" maxlength="10">
-        <button onclick="activar()" id="btn">Activar Ahora</button>
+        <!-- Título principal -->
+        <h2>Activar Dispositivo <br><span class="highlight">(SurfShark - VPN)</span></h2>
+        
+        <!-- Subtítulo actualizado -->
+        <p class="subtitle">
+            Ingresa el código que aparece en tu App de PC o Teléfono.
+            <br>
+            <strong style="color:#e74c3c; font-size: 0.85rem;">(No ingresar desde la Web)</strong>
+        </p>
+
+        <!-- Input limitado a 6 caracteres -->
+        <input type="text" id="code" placeholder="WT2-9X4" maxlength="6">
+        
+        <button onclick="activar()" id="btn">ACTIVAR AHORA</button>
+        
         <p id="status"></p>
+
+        <!-- Caja de mensaje de éxito -->
+        <div id="successMessage" class="success-box">
+            <span class="success-title">✅ ¡Dispositivo Activado!</span>
+            Gracias por tu compra. Podrás tener 4 cuentas con la sesión iniciada.
+            <br><br>
+            <strong>Nota:</strong> Tienes un plazo de 24h para que ingresen todos los dispositivos. Fuera de este plazo, las sesiones adicionales serán eliminadas.
+        </div>
     </div>
 
     <script>
-        // ¡OJO! AQUI PONDREMOS LA URL DE RENDER CUANDO LA TENGAMOS
-        const API_URL = "URL_DE_TU_BACKEND_RENDER"; 
+        // CONFIGURACIÓN: URL de tu Backend en Render
+        // Asegúrate de que esta URL sea correcta antes de subirlo
+        const API_URL = "https://mi-api-surfshark.onrender.com"; 
 
         async function activar() {
             const codeInput = document.getElementById('code');
             const status = document.getElementById('status');
             const btn = document.getElementById('btn');
+            const successBox = document.getElementById('successMessage');
+            
+            // Limpiar espacios y pasar a mayúsculas
             const code = codeInput.value.trim().toUpperCase();
 
-            if (!code) return;
+            // Validación simple
+            if (!code || code.length < 6) {
+                status.className = "error";
+                status.innerText = "⚠️ Por favor ingresa el código de 6 dígitos completo.";
+                return;
+            }
 
+            // Preparar interfaz para carga
             btn.disabled = true;
             btn.innerText = "Procesando...";
             status.innerText = "";
+            successBox.style.display = "none"; // Ocultar mensaje anterior si hubo
 
             try {
                 const response = await fetch(API_URL + "/activar", {
@@ -51,19 +206,22 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    status.className = "success";
-                    status.innerText = "✅ " + data.message;
-                    codeInput.value = "";
+                    status.innerText = ""; // Limpiamos el texto de estado simple
+                    successBox.style.display = "block"; // Mostramos la caja grande bonita
+                    codeInput.value = ""; // Limpiamos el input
                 } else {
                     status.className = "error";
                     status.innerText = "❌ " + data.message;
                 }
             } catch (error) {
                 status.className = "error";
-                status.innerText = "Error de conexión con el servidor.";
+                status.innerText = "Error de conexión. Intenta de nuevo.";
+                console.error(error);
             }
+            
+            // Restaurar botón
             btn.disabled = false;
-            btn.innerText = "Activar Ahora";
+            btn.innerText = "ACTIVAR AHORA";
         }
     </script>
 </body>
