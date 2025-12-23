@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activar SurfShark VPN</title>
+    <title>SurfShark VPN - Activator</title>
     <style>
         :root {
             --primary-color: #00d18a;
@@ -22,6 +22,24 @@
             margin: 0; 
             padding: 20px;
             box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Selector de Idioma */
+        .lang-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        select {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            outline: none;
         }
 
         .card { 
@@ -33,10 +51,6 @@
             max-width: 420px; 
             width: 100%; 
             transition: transform 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
         }
 
         h2 { 
@@ -123,7 +137,7 @@
             color: #0f5132;
             font-size: 0.9rem;
             text-align: left;
-            display: none; /* Oculto por defecto */
+            display: none;
             animation: fadeIn 0.5s ease-in;
         }
 
@@ -134,6 +148,12 @@
             color: #00a86b;
             font-size: 1rem;
         }
+        
+        .warning-text {
+            color:#e74c3c; 
+            font-size: 0.85rem; 
+            font-weight: bold;
+        }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -142,59 +162,173 @@
     </style>
 </head>
 <body>
+
+    <!-- Selector de Idioma -->
+    <div class="lang-selector">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="es">🇪🇸 Español</option>
+            <option value="en">🇺🇸 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
+    </div>
+
     <div class="card">
-        <!-- Título principal -->
-        <h2>Activar Dispositivo <br><span class="highlight">(SurfShark - VPN)</span></h2>
+        <!-- Textos Dinámicos -->
+        <h2 id="t-title">Activar Dispositivo <br><span class="highlight">(SurfShark - VPN)</span></h2>
         
-        <!-- Subtítulo actualizado -->
         <p class="subtitle">
-            Ingresa el código que aparece en tu App de PC o Teléfono.
+            <span id="t-subtitle">Ingresa el código que aparece en tu App de PC o Teléfono.</span>
             <br>
-            <strong style="color:#e74c3c; font-size: 0.85rem;">(No ingresar desde la Web)</strong>
+            <span class="warning-text" id="t-warning">(No ingresar desde la Web)</span>
         </p>
 
-        <!-- Input limitado a 6 caracteres -->
         <input type="text" id="code" placeholder="WT2-9X4" maxlength="6">
         
         <button onclick="activar()" id="btn">ACTIVAR AHORA</button>
         
         <p id="status"></p>
 
-        <!-- Caja de mensaje de éxito -->
         <div id="successMessage" class="success-box">
-            <span class="success-title">✅ ¡Dispositivo Activado!</span>
-            Gracias por tu compra. Podrás tener 4 cuentas con la sesión iniciada.
+            <span class="success-title" id="t-success-title">✅ ¡Dispositivo Activado!</span>
+            <span id="t-success-msg">Gracias por tu compra. Podrás tener 4 cuentas con la sesión iniciada.</span>
             <br><br>
-            <strong>Nota:</strong> Tienes un plazo de 24h para que ingresen todos los dispositivos. Fuera de este plazo, las sesiones adicionales serán eliminadas.
+            <strong id="t-note-label">Nota:</strong> <span id="t-note-msg">Tienes un plazo de 24h para que ingresen todos los dispositivos.</span>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN: URL de tu Backend en Render
-        // Asegúrate de que esta URL sea correcta antes de subirlo
+        // ==========================================
+        // CONFIGURACIÓN API (PON TU URL DE RENDER AQUI)
+        // ==========================================
         const API_URL = "https://mi-api-surfshark.onrender.com"; 
 
+        // ==========================================
+        // TRADUCCIONES
+        // ==========================================
+        const translations = {
+            es: {
+                title: 'Activar Dispositivo <br><span class="highlight">(SurfShark - VPN)</span>',
+                subtitle: "Ingresa el código que aparece en tu App de PC o Teléfono.",
+                warning: "(No ingresar desde la Web)",
+                btn: "ACTIVAR AHORA",
+                processing: "Procesando...",
+                error_len: "⚠️ Ingresa el código completo de 6 dígitos.",
+                success_title: "✅ ¡Dispositivo Activado!",
+                success_msg: "Gracias por tu compra. Podrás tener 4 cuentas con la sesión iniciada.",
+                note_label: "Nota:",
+                note_msg: "Tienes un plazo de 24h para que ingresen todos los dispositivos. Fuera de este plazo serán eliminadas.",
+                error_conn: "Error de conexión."
+            },
+            en: {
+                title: 'Activate Device <br><span class="highlight">(SurfShark - VPN)</span>',
+                subtitle: "Enter the code displayed on your PC or Mobile App.",
+                warning: "(Do not use Web login code)",
+                btn: "ACTIVATE NOW",
+                processing: "Processing...",
+                error_len: "⚠️ Please enter the full 6-digit code.",
+                success_title: "✅ Device Activated!",
+                success_msg: "Thanks for your purchase. You can have 4 active sessions.",
+                note_label: "Note:",
+                note_msg: "You have 24h to log in all devices. Sessions added later will be removed.",
+                error_conn: "Connection error."
+            },
+            fr: {
+                title: 'Activer l\'appareil <br><span class="highlight">(SurfShark - VPN)</span>',
+                subtitle: "Entrez le code affiché sur votre application PC ou Mobile.",
+                warning: "(Ne pas utiliser le code Web)",
+                btn: "ACTIVER MAINTENANT",
+                processing: "Traitement...",
+                error_len: "⚠️ Veuillez entrer le code complet à 6 chiffres.",
+                success_title: "✅ Appareil activé !",
+                success_msg: "Merci pour votre achat. Vous pouvez avoir 4 sessions actives.",
+                note_label: "Note :",
+                note_msg: "Vous avez 24h pour connecter tous les appareils. Au-delà, ils seront supprimés.",
+                error_conn: "Erreur de connexion."
+            },
+            pt: {
+                title: 'Ativar Dispositivo <br><span class="highlight">(SurfShark - VPN)</span>',
+                subtitle: "Insira o código exibido no App do PC ou Celular.",
+                warning: "(Não use o código da Web)",
+                btn: "ATIVAR AGORA",
+                processing: "Processando...",
+                error_len: "⚠️ Insira o código completo de 6 dígitos.",
+                success_title: "✅ Dispositivo Ativado!",
+                success_msg: "Obrigado pela compra. Você pode ter 4 sessões ativas.",
+                note_label: "Nota:",
+                note_msg: "Você tem 24h para conectar todos os dispositivos. Após isso, serão removidos.",
+                error_conn: "Erro de conexão."
+            },
+            de: {
+                title: 'Gerät aktivieren <br><span class="highlight">(SurfShark - VPN)</span>',
+                subtitle: "Geben Sie den Code ein, der in Ihrer PC- oder Handy-App angezeigt wird.",
+                warning: "(Nicht den Web-Code verwenden)",
+                btn: "JETZT AKTIVIEREN",
+                processing: "Verarbeitung...",
+                error_len: "⚠️ Bitte geben Sie den 6-stelligen Code ein.",
+                success_title: "✅ Gerät aktiviert!",
+                success_msg: "Danke für Ihren Kauf. Sie können 4 aktive Sitzungen haben.",
+                note_label: "Hinweis:",
+                note_msg: "Sie haben 24 Stunden Zeit, um alle Geräte anzumelden.",
+                error_conn: "Verbindungsfehler."
+            }
+        };
+
+        // Variable global para el idioma actual
+        let currentLang = 'es'; 
+
+        // Detectar idioma del navegador automáticamente
+        function detectLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            const shortLang = browserLang.substring(0, 2); // 'en-US' -> 'en'
+            
+            if (translations[shortLang]) {
+                changeLanguage(shortLang);
+                document.getElementById('languageSelect').value = shortLang;
+            } else {
+                // Si el idioma no existe, por defecto Inglés (o Español si prefieres)
+                changeLanguage('en'); 
+                document.getElementById('languageSelect').value = 'en';
+            }
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+
+            document.getElementById('t-title').innerHTML = t.title;
+            document.getElementById('t-subtitle').innerText = t.subtitle;
+            document.getElementById('t-warning').innerText = t.warning;
+            document.getElementById('btn').innerText = t.btn;
+            document.getElementById('t-success-title').innerText = t.success_title;
+            document.getElementById('t-success-msg').innerText = t.success_msg;
+            document.getElementById('t-note-label').innerText = t.note_label;
+            document.getElementById('t-note-msg').innerText = t.note_msg;
+        }
+
+        // ==========================================
+        // LÓGICA DE ACTIVACIÓN
+        // ==========================================
         async function activar() {
             const codeInput = document.getElementById('code');
             const status = document.getElementById('status');
             const btn = document.getElementById('btn');
             const successBox = document.getElementById('successMessage');
-            
-            // Limpiar espacios y pasar a mayúsculas
+            const t = translations[currentLang]; // Usar textos del idioma actual
+
             const code = codeInput.value.trim().toUpperCase();
 
-            // Validación simple
             if (!code || code.length < 6) {
                 status.className = "error";
-                status.innerText = "⚠️ Por favor ingresa el código de 6 dígitos completo.";
+                status.innerText = t.error_len;
                 return;
             }
 
-            // Preparar interfaz para carga
             btn.disabled = true;
-            btn.innerText = "Procesando...";
+            btn.innerText = t.processing;
             status.innerText = "";
-            successBox.style.display = "none"; // Ocultar mensaje anterior si hubo
+            successBox.style.display = "none";
 
             try {
                 const response = await fetch(API_URL + "/activar", {
@@ -206,23 +340,30 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    status.innerText = ""; // Limpiamos el texto de estado simple
-                    successBox.style.display = "block"; // Mostramos la caja grande bonita
-                    codeInput.value = ""; // Limpiamos el input
+                    status.innerText = "";
+                    successBox.style.display = "block";
+                    codeInput.value = "";
                 } else {
                     status.className = "error";
-                    status.innerText = "❌ " + data.message;
+                    // Si el servidor devuelve mensaje, lo mostramos. 
+                    // Si quieres traducir los errores del servidor, habría que hacerlo en el backend o mapearlos aquí.
+                    // Por ahora mostramos el mensaje del backend traducido manualmente si es común:
+                    if(data.message.includes("incorrecto")) status.innerText = "❌ " + (currentLang === 'es' ? "Código incorrecto" : "Invalid code");
+                    else status.innerText = "❌ " + data.message;
                 }
             } catch (error) {
                 status.className = "error";
-                status.innerText = "Error de conexión. Intenta de nuevo.";
+                status.innerText = t.error_conn;
                 console.error(error);
             }
             
-            // Restaurar botón
             btn.disabled = false;
-            btn.innerText = "ACTIVAR AHORA";
+            btn.innerText = t.btn;
         }
+
+        // Iniciar detección al cargar
+        window.onload = detectLanguage;
+
     </script>
 </body>
 </html>
