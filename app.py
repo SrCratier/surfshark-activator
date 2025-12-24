@@ -1,32 +1,68 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from curl_cffi import requests as cffi_requests # Librería anti-detección
+from curl_cffi import requests as cffi_requests
 import os
+from datetime import datetime
+import pytz
 
 app = Flask(__name__)
 CORS(app)
 
 TARGET_URL = "https://my.surfshark.com/account/p_api/v1/account/authorization/assign"
 
+VALID_TOKENS = [
+"GAMSGO-S10PA",
+"GAMSGO-9DAO1",
+"GAMSGO-CPSA0",
+"GAMSGO-MIS81",
+"GAMSGO-0DSA8",
+"GAMSGO-48392",
+"GAMSGO-75014",
+"GAMSGO-19607",
+"GAMSGO-86420",
+"GAMSGO-03178",
+"GAMSGO-59241",
+"GAMSGO-40736",
+"GAMSGO-91805",
+"GAMSGO-26094",
+"GAMSGO-77563",
+"GAMSGO-14890",
+"GAMSGO-63927",
+"GAMSGO-80451",
+"GAMSGO-39206",
+"GAMSGO-57018"
+
+]
+
 @app.route('/', methods=['GET'])
 def home():
-    return "Bot Surfshark Camuflado V2 - Online"
+    return "System Online"
 
 @app.route('/activar', methods=['POST'])
 def activar_dispositivo():
     data = request.json
-    codigo_tv = data.get('code')
+    surfshark_code = data.get('code')
+    access_token = data.get('token')
+    user_country = data.get('country', 'Unknown')
 
-    if not codigo_tv:
-        return jsonify({"success": False, "message": "Falta el código"}), 400
+    ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+    user_agent = request.headers.get('User-Agent')
+    
+    tz_peru = pytz.timezone('America/Lima')
+    current_time = datetime.now(tz_peru).strftime('%Y-%m-%d %H:%M:%S')
 
-    # Recuperamos la cookie desde las variables de Render
+    if access_token not in VALID_TOKENS:
+        print(f"[ACCESO DENEGADO] {current_time} | IP: {ip_address} | País: {user_country} | Token Inválido: {access_token}")
+        return jsonify({"success": False, "message": "Access Token Invalid / Código de Acceso Inválido"}), 403
+
+    if not surfshark_code:
+        return jsonify({"success": False, "message": "Missing Surfshark Code"}), 400
+
     mis_cookies = os.environ.get('SURFSHARK_COOKIE')
 
     if not mis_cookies:
-        return jsonify({"success": False, "message": "Error: Falta la cookie en el servidor"}), 500
+        return jsonify({"success": False, "message": "Server Config Error"}), 500
 
-    # Configuración para engañar a Cloudflare
     headers = {
         "authority": "my.surfshark.com",
         "accept": "application/json",
@@ -37,12 +73,11 @@ def activar_dispositivo():
         "cookie": mis_cookies
     }
 
-    payload = {"code": codigo_tv}
+    payload = {"code": surfshark_code}
 
     try:
-        print(f"Intentando activar código {codigo_tv} simulando Chrome...")
+        print(f"[INTENTO ACTIVACIÓN] {current_time} | IP: {ip_address} | País: {user_country} | Token: {access_token} | Code: {surfshark_code} | Device: {user_agent}")
         
-        # Usamos impersonate='chrome110' para evitar el bloqueo TLS
         response = cffi_requests.post(
             TARGET_URL, 
             json=payload, 
@@ -51,19 +86,21 @@ def activar_dispositivo():
             timeout=20
         )
         
-        print(f"Respuesta Surfshark: {response.status_code}")
-        
         if response.status_code == 200:
-            return jsonify({"success": True, "message": "¡Dispositivo activado con éxito!"})
+            print(f"[ÉXITO] Activación completada para el token {access_token}")
+            return jsonify({"success": True, "message": "OK"})
         elif response.status_code == 404:
-            return jsonify({"success": False, "message": "Código incorrecto o expirado."})
+            print(f"[FALLO] Código Surfshark incorrecto/expirado")
+            return jsonify({"success": False, "message": "Code Invalid/Expired"})
         elif response.status_code in [401, 403]:
-            return jsonify({"success": False, "message": "Bloqueo de seguridad (IP/Cookie). Intenta el Plan B."})
+            print(f"[CRITICAL] Bloqueo de sesión Surfshark")
+            return jsonify({"success": False, "message": "Session Error (Server Side)"})
         else:
-            return jsonify({"success": False, "message": f"Error desconocido: {response.status_code}"})
+            return jsonify({"success": False, "message": f"Error: {response.status_code}"})
 
     except Exception as e:
-        return jsonify({"success": False, "message": f"Error interno: {str(e)}"}), 500
+        print(f"[ERROR INTERNO] {str(e)}")
+        return jsonify({"success": False, "message": "Internal Server Error"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
